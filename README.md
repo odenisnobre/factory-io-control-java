@@ -16,4 +16,4 @@ Aplicar conceitos de Java controlando cena do FactoryIO usando Modbus.
 
 #### Demonstração
 
-<img src="https://github.com/odenisnobre/factory-io-control-java/blob/master/media/demonstracao.gif?raw=true" height="300">
+Ou você pode [assistir à demonstração](https://github.com/odenisnobre/factory-io-control-java/raw/master/media/demonstração.mp4) clicando aqui.
