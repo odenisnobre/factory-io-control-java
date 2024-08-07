@@ -5,5 +5,5 @@
 
 #### Telas
 
-**Tela Principal**
+* **Tela Principal**
 ![image](https://github.com/odenisnobre/factory-io-control-java/blob/master/img/tela.png?raw=true)
