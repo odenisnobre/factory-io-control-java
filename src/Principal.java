@@ -1,25 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 
-//importa bibliotecas
+/*
+    Denis Nobre - Noobres Sistemas
+    Agosto/2024
+    Controlando Factory IO com Java via Modbus
+*/
+
+// importa bibliotecas principais para controle
 import de.re.easymodbus.modbusclient.*;
 import java.awt.Color;
 
 
-
-/**
- *
- * @author Denis Nobre
- */
 public class Principal extends javax.swing.JFrame {
 
     //cria objetos globais
     ModbusClient mbclient;
     Thread monitoraCom;
     private boolean runMonitora;
-    
     
     /**
      * Creates new form Principal
@@ -314,128 +310,86 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_entrada_desligaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_entrada_desligaActionPerformed
-        // TODO add your handling code here:
         
+        // desliga correia de entrada
         if(mbclient.isConnected()){
             try {
                 mbclient.WriteSingleCoil(301, false);
             } catch (Exception e) {
             }
-        
         }
-        
         
     }//GEN-LAST:event_btn_entrada_desligaActionPerformed
 
     private void btn_desconectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_desconectarActionPerformed
-        // TODO add your handling code here:
         
+        // desconecta conexao com o factory IO
         try {
             mbclient.Disconnect();
         } catch (Exception e) {
         }
         if (this.monitoraCom != null && this.monitoraCom.isAlive()) {
+            // seta variavel de controle para false
             runMonitora = false;
+            // finaliza a thread de monitoramento
             this.monitoraCom.interrupt();
         }
         
-        
-        /*
-        try {
-            mbclient.Disconnect();
-            if(!mbclient.isConnected()){
-                System.out.println("Factory IO Desconectado!!");
-                panel1.setBackground(Color.red);
-                btn_desconectar.setEnabled(true);
-            } else {
-                System.out.println("Factory IO Conectado!!!");
-                panel1.setBackground(Color.green);
-            }
-        } catch (Exception e) {
-            System.out.println("Falha ao Conectador ao Factory IO!!");
-            btn_desconectar.setEnabled(false);
-            panel1.setBackground(Color.red);
-        }
-        */
     }//GEN-LAST:event_btn_desconectarActionPerformed
 
     private void btn_conectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_conectarActionPerformed
-        // TODO add your handling code here:
-        //String ip = txt_ip.getText();
-        //int porta = Integer.parseInt(txt_porta.getText());
         
+        // inicia monitoramento da conexao com o factoryio
         try {
             this.monitoraCom = new Thread(this::monitoraConexaoMB);
+            // seta variavel de controle para true
             runMonitora = true;
+            // inicial thread de monitoramento
             this.monitoraCom.start();
         } catch (Exception e) {
         }
         
-        /*
-        try {
-            mbclient =  new ModbusClient(ip, porta);
-            mbclient.Connect();
-            if(mbclient.isConnected()){
-                System.out.println("Factory IO Conectado!!");
-                panel1.setBackground(Color.green);
-                btn_desconectar.setEnabled(true);
-                Thread th = new Thread(this::monitoraConexaoMB);
-                th.start();
-            } else {
-                System.out.println("Factory IO não Conectado!!!");
-                panel1.setBackground(Color.red);
-            }
-        } catch (Exception e) {
-            System.out.println("Falha ao Conectador ao Factory IO!!");
-            btn_desconectar.setEnabled(false);
-            panel1.setBackground(Color.red);
-        }
-        */
     }//GEN-LAST:event_btn_conectarActionPerformed
 
     private void btn_entrada_ligaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_entrada_ligaActionPerformed
-        // TODO add your handling code here:
         
+        // liga correia de entrada
         if(mbclient.isConnected()){
             try {
                 mbclient.WriteSingleCoil(301, true);
             } catch (Exception e) {
             }
-        
         }
-        
-        
-        
         
     }//GEN-LAST:event_btn_entrada_ligaActionPerformed
 
     private void btn_saida_desligaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saida_desligaActionPerformed
-        // TODO add your handling code here:
-        
+       
+        // desliga correia de saida
         if(mbclient.isConnected()){
             try {
                 mbclient.WriteSingleCoil(300, false);
             } catch (Exception e) {
             }
-        
         }
+        
     }//GEN-LAST:event_btn_saida_desligaActionPerformed
 
     private void btn_saida_ligaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saida_ligaActionPerformed
-        // TODO add your handling code here:
         
+        // liga correia de saida
         if(mbclient.isConnected()){
             try {
                 mbclient.WriteSingleCoil(300, true);
             } catch (Exception e) {
             }
-        
         }
+        
     }//GEN-LAST:event_btn_saida_ligaActionPerformed
 
     private void btn_reseetfioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_reseetfioActionPerformed
-        // TODO add your handling code here:
         
+        // reseta factoryio
         if(mbclient.isConnected()){
             try {
                 mbclient.WriteSingleCoil(302, true);
@@ -443,8 +397,8 @@ public class Principal extends javax.swing.JFrame {
                 mbclient.WriteSingleCoil(302, false);
             } catch (Exception e) {
             }
-        
         }
+        
     }//GEN-LAST:event_btn_reseetfioActionPerformed
 
     /**
@@ -507,16 +461,20 @@ public class Principal extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     
+    // Rotina para ficar monitorando a conexão da aplicação
+    // com o Factory IO
     private void monitoraConexaoMB(){
         String ip = txt_ip.getText();
         int porta = Integer.parseInt(txt_porta.getText());
         while(runMonitora){
             try {
+                // faz monitoramento a cada 5 segundos
                 Thread.sleep(5000);
                 mbclient =  new ModbusClient(ip, porta);
                 mbclient.Connect();
                 System.out.println("Monitorando Conexao....");
                 if(mbclient.isConnected()){
+                    // habilita objetos quando conectado
                     btn_desconectar.setEnabled(true);
                     panel1.setBackground(Color.green);
                     btn_entrada_liga.setEnabled(true);
@@ -525,6 +483,7 @@ public class Principal extends javax.swing.JFrame {
                     btn_saida_desliga.setEnabled(true);
                     btn_reseetfio.setEnabled(true);
                 } else {
+                    // habilita objetos quando nao conectado
                     btn_desconectar.setEnabled(false);
                     panel1.setBackground(Color.red);
                     btn_entrada_liga.setEnabled(false);
@@ -534,6 +493,7 @@ public class Principal extends javax.swing.JFrame {
                     btn_reseetfio.setEnabled(false);
                 }
             } catch (Exception e) {
+                // habilita objetos quando falhga na conexao
                 btn_desconectar.setEnabled(false);
                 panel1.setBackground(Color.red);
                 btn_entrada_liga.setEnabled(false);
